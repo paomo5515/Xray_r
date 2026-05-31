@@ -97,10 +97,10 @@ func (p *Panel) loadCore(panelConfig *Config) *core.Instance {
 	var coreCustomInboundConfig []conf.InboundDetourConfig
 	if panelConfig.InboundConfigPath != "" {
 		if data, err := os.ReadFile(panelConfig.InboundConfigPath); err != nil {
-			log.Panicf("Failed to read Custom Inbound config file at: %s", panelConfig.OutboundConfigPath)
+			log.Panicf("Failed to read Custom Inbound config file at: %s", panelConfig.InboundConfigPath)
 		} else {
 			if err = json.Unmarshal(data, &coreCustomInboundConfig); err != nil {
-				log.Panicf("Failed to unmarshal Custom Inbound config: %s", panelConfig.OutboundConfigPath)
+				log.Panicf("Failed to unmarshal Custom Inbound config: %s", panelConfig.InboundConfigPath)
 			}
 		}
 	}
@@ -201,7 +201,10 @@ func (p *Panel) Start() {
 				log.Panicf("Read Controller Config Failed")
 			}
 		}
-		controllerService = controller.New(server, apiClient, controllerConfig, nodeConfig.PanelType)
+		controllerService, err := controller.New(server, apiClient, controllerConfig, nodeConfig.PanelType)
+		if err != nil {
+			log.Panicf("Create controller failed: %s", err)
+		}
 		p.Service = append(p.Service, controllerService)
 
 	}

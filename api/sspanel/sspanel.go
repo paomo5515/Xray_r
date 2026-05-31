@@ -145,12 +145,18 @@ func (c *APIClient) parseResponse(res *resty.Response, path string, err error) (
 	if err != nil {
 		return nil, fmt.Errorf("request %s failed: %s", c.assembleURL(path), err)
 	}
+	if res == nil {
+		return nil, fmt.Errorf("request %s failed: empty response", c.assembleURL(path))
+	}
 
-	if res.StatusCode() > 400 {
+	if res.StatusCode() > 399 {
 		body := res.Body()
 		return nil, fmt.Errorf("request %s failed: %s, %v", c.assembleURL(path), string(body), err)
 	}
-	response := res.Result().(*Response)
+	response, ok := res.Result().(*Response)
+	if !ok || response == nil {
+		return nil, fmt.Errorf("request %s failed: invalid response shape", c.assembleURL(path))
+	}
 
 	if response.Ret != 1 {
 		res, _ := json.Marshal(&response)
