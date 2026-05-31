@@ -1,5 +1,3 @@
-//go:build integration
-
 package gov2panel_test
 
 import (

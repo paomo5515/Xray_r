@@ -53,48 +53,28 @@ type periodicTask struct {
 	*task.Periodic
 }
 
-// New returns a Controller service with default parameters.
-func New(server *core.Instance, api api.API, config *Config, panelType string) (*Controller, error) {
+// New return a Controller service with default parameters.
+func New(server *core.Instance, api api.API, config *Config, panelType string) *Controller {
 	logger := log.NewEntry(log.StandardLogger()).WithFields(log.Fields{
 		"Host": api.Describe().APIHost,
 		"Type": api.Describe().NodeType,
 		"ID":   api.Describe().NodeID,
 	})
-	ibm, ok := server.GetFeature(inbound.ManagerType()).(inbound.Manager)
-	if !ok {
-		return nil, fmt.Errorf("missing inbound manager feature")
-	}
-	obm, ok := server.GetFeature(outbound.ManagerType()).(outbound.Manager)
-	if !ok {
-		return nil, fmt.Errorf("missing outbound manager feature")
-	}
-	stm, ok := server.GetFeature(stats.ManagerType()).(stats.Manager)
-	if !ok {
-		return nil, fmt.Errorf("missing stats manager feature")
-	}
-	pm, ok := server.GetFeature(policy.ManagerType()).(policy.Manager)
-	if !ok {
-		return nil, fmt.Errorf("missing policy manager feature")
-	}
-	dispatcher, ok := server.GetFeature(mydispatcher.Type()).(*mydispatcher.DefaultDispatcher)
-	if !ok {
-		return nil, fmt.Errorf("missing mydispatcher feature")
-	}
 	controller := &Controller{
 		server:     server,
 		config:     config,
 		apiClient:  api,
 		panelType:  panelType,
-		ibm:        ibm,
-		obm:        obm,
-		stm:        stm,
-		pm:         pm,
-		dispatcher: dispatcher,
+		ibm:        server.GetFeature(inbound.ManagerType()).(inbound.Manager),
+		obm:        server.GetFeature(outbound.ManagerType()).(outbound.Manager),
+		stm:        server.GetFeature(stats.ManagerType()).(stats.Manager),
+		pm:         server.GetFeature(policy.ManagerType()).(policy.Manager),
+		dispatcher: server.GetFeature(mydispatcher.Type()).(*mydispatcher.DefaultDispatcher),
 		startAt:    time.Now(),
 		logger:     logger,
 	}
 
-	return controller, nil
+	return controller
 }
 
 // Start implement the Start() function of the service interface

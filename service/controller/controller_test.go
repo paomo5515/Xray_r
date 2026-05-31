@@ -1,5 +1,3 @@
-//go:build integration
-
 package controller_test
 
 import (
@@ -66,10 +64,7 @@ func TestController(t *testing.T) {
 		NodeType: "V2ray",
 	}
 	apiClient := sspanel.New(apiConfig)
-	c, err := New(server, apiClient, controlerConfig, "SSpanel")
-	if err != nil {
-		t.Fatal(err)
-	}
+	c := New(server, apiClient, controlerConfig, "SSpanel")
 	fmt.Println("Sleep 1s")
 	err = c.Start()
 	if err != nil {

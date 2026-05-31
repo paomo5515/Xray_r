@@ -1,5 +1,3 @@
-//go:build integration
-
 package proxypanel_test
 
 import (

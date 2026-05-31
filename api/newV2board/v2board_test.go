@@ -1,5 +1,3 @@
-//go:build integration
-
 package newV2board_test
 
 import (
