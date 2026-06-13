@@ -138,6 +138,9 @@ func (c *APIClient) parseResponse(res *resty.Response, path string, err error) (
 	if err != nil {
 		return nil, fmt.Errorf("request %s failed: %v", c.assembleURL(path), err)
 	}
+	if res == nil {
+		return nil, fmt.Errorf("request %s failed: empty response", c.assembleURL(path))
+	}
 
 	if res.StatusCode() > 399 {
 		return nil, fmt.Errorf("request %s failed: %s, %v", c.assembleURL(path), res.String(), err)
@@ -377,8 +380,8 @@ func (c *APIClient) parseV2rayNodeResponse(s *serverConfig) (*api.NodeInfo, erro
 	} else {
 		dest = s.VlessTlsSettings.Sni
 	}
-	if s.VlessTlsSettings.xVer != 0 {
-		xVer = s.VlessTlsSettings.xVer
+	if s.VlessTlsSettings.XVer != 0 {
+		xVer = s.VlessTlsSettings.XVer
 	} else {
 		xVer = 0
 	}

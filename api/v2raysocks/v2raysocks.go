@@ -136,8 +136,11 @@ func (c *APIClient) parseResponse(res *resty.Response, path string, err error) (
 	if err != nil {
 		return nil, fmt.Errorf("request %s failed: %s", c.assembleURL(path), err)
 	}
+	if res == nil {
+		return nil, fmt.Errorf("request %s failed: empty response", c.assembleURL(path))
+	}
 
-	if res.StatusCode() > 400 {
+	if res.StatusCode() > 399 {
 		body := res.Body()
 		return nil, fmt.Errorf("request %s failed: %s, %s", c.assembleURL(path), string(body), err)
 	}
